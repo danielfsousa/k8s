@@ -106,11 +106,11 @@ workflows:
         filters:
           tags:
             ignore: /.*/
-  migrate:
-    jobs:
-      - migrate_development
-      - migrate_staging
-      - migrate_production
+  # migrate:
+  #   jobs:
+  #     - migrate_development
+  #     - migrate_staging
+  #     - migrate_production
   release:
     jobs:
       - deploy_development:
