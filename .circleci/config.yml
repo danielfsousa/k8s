@@ -39,6 +39,26 @@ references:
       - *set_environment_variables
       - run: prepare-kubectl
       - run: k8s-deploy-and-verify -f ${ROK8S_CONFIG}
+  development_filters: &development_filters
+    filters:
+      branches:
+        only:
+          - develop
+      tags:
+        ignore: /.*/
+  staging_filters: &staging_filters
+    filters:
+      branches:
+        only:
+          - master
+      tags:
+        ignore: /.*/
+  production_filters: &production_filters
+    filters:
+      branches:
+        ignore: /.*/
+      tags:
+        only: /\d+\.\d+\.\d+$/
 
 jobs:
   test:
@@ -106,28 +126,17 @@ workflows:
               ignore: /.*/
   migrate:
     jobs:
-      - migrate_development
-      - migrate_staging
-      - migrate_production
+      - migrate_development:
+          <<: *development_filters
+      - migrate_staging:
+          <<: *staging_filters
+      - migrate_production:
+          <<: *production_filters
   release:
     jobs:
       - deploy_development:
-          filters:
-            branches:
-              only:
-                - develop
-            tags:
-              ignore: /.*/
+          <<: *development_filters
       - deploy_staging:
-          filters:
-            branches:
-              only:
-                - master
-            tags:
-              ignore: /.*/
+          <<: *staging_filters
       - deploy_production:
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /\d+\.\d+\.\d+$/
+          <<: *production_filters
