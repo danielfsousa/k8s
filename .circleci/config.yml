@@ -64,15 +64,16 @@ jobs:
   test:
     docker:
       - image: circleci/node:10.14.0
+      - image: redis
     steps:
       - checkout
       - *restore_cache
       - run: npm install
       - *save_cache
       - run: npm run lint
-      - run: npm run migrate TEST_DATABASE
+      - run: npm run migrate
       - run: npm test
-  imagebuild:
+  image_build:
     docker:
       - image: quay.io/reactiveops/ci-images:v7-alpine
     steps:
@@ -117,26 +118,36 @@ jobs:
 
 workflows:
   version: 2
-  build_and_test:
+  build_test_migrate_release:
     jobs:
       - test
-      - imagebuild:
+      - image_build:
+          requires:
+            - test
           filters:
             tags:
               ignore: /.*/
-  migrate:
-    jobs:
       - migrate_development:
           <<: *development_filters
+          requires:
+            - test
       - migrate_staging:
           <<: *staging_filters
+          requires:
+            - test
       - migrate_production:
           <<: *production_filters
-  release:
-    jobs:
+          requires:
+            - test
       - deploy_development:
           <<: *development_filters
+          requires:
+            - migrate_development
       - deploy_staging:
           <<: *staging_filters
+          requires:
+            - migrate_staging
       - deploy_production:
           <<: *production_filters
+          requires:
+            - migrate_production
