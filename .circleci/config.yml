@@ -101,7 +101,6 @@ workflows:
     jobs:
       - test
       - imagebuild:
-          context: org-global
           filters:
             tags:
               ignore: /.*/
@@ -113,10 +112,6 @@ workflows:
   release:
     jobs:
       - deploy_development:
-          context: org-global
-          requires:
-            - imagebuild
-            - migrate_development
           filters:
             branches:
               only:
@@ -124,10 +119,6 @@ workflows:
             tags:
               ignore: /.*/
       - deploy_staging:
-          context: org-global
-          requires:
-            - imagebuild
-            - migrate_staging
           filters:
             branches:
               only:
@@ -135,9 +126,6 @@ workflows:
             tags:
               ignore: /.*/
       - deploy_production:
-          context: org-global
-          requires:
-            - migrate_production
           filters:
             branches:
               ignore: /.*/
