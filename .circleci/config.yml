@@ -12,7 +12,7 @@ references:
       paths:
         - node_modules
       key: v1-dependencies-{{ checksum "package.json" }}
-  set_environment_variables: &set_environment_variables
+  initialize_env: &initialize_env
     run:
       name: Set Environment Variables
       command: |
@@ -21,7 +21,37 @@ references:
         echo 'export CI_BUILD_NUM=$CIRCLE_BUILD_NUM' >> ${BASH_ENV}
         echo 'export CI_TAG=$CIRCLE_TAG' >> ${BASH_ENV}
         echo 'export ROK8S_INSTALL_PATH=${HOME}' >> ${BASH_ENV}
-        echo "export KUBECONFIG_DATA=\$$KUBECONFIG_DATA" >> ${BASH_ENV}
+        echo 'export GCLOUDSDK_CONTAINER_USE_V1_CLIENT="false"' >> ${BASH_ENV}
+        echo 'export GOOGLE_APPLICATION_CREDENTIALS="${ROK8S_TMP:-${HOME}}/gcloud-service-key.json"' >> ${BASH_ENV}
+        echo 'export GCP_REGIONAL_CLUSTER="true"' >> ${BASH_ENV}
+        echo 'export GCP_REGION="us-central1"' >> ${BASH_ENV}
+  initialize_dev: &initialize_dev
+    run:
+      name: Set Development Environment Variables
+      command: |
+        echo 'export DATABASE_URI=$DATABASE_URI_DEV' >> ${BASH_ENV}
+        echo 'export GCP_PROJECT="aprendendo-226519"' >> ${BASH_ENV}
+        echo 'export CLUSTER_NAME="standard-cluster-1"' >> ${BASH_ENV}
+        echo 'export GCLOUD_KEY=$GCLOUD_KEY_DEV' >> ${BASH_ENV}
+        echo 'export ROK8S_CONFIG="deploy/config/development.config"' >> ${BASH_ENV}
+  initialize_staging: &initialize_staging
+    run:
+      name: Set Staging Environment Variables
+      command: |
+        echo 'export DATABASE_URI=$DATABASE_URI_STAGING' >> ${BASH_ENV}
+        echo 'export GCP_PROJECT="aprendendo-226519"' >> ${BASH_ENV}
+        echo 'export CLUSTER_NAME="standard-cluster-1"' >> ${BASH_ENV}
+        echo 'export GCLOUD_KEY=$GCLOUD_KEY_STAGING' >> ${BASH_ENV}
+        echo 'export ROK8S_CONFIG="deploy/config/staging.config"' >> ${BASH_ENV}
+  initialize_prod: &initialize_production
+    run:
+      name: Set Production Environment Variables
+      command: |
+        echo 'export DATABASE_URI=$DATABASE_URI_PROD' >> ${BASH_ENV}
+        echo 'export GCP_PROJECT="aprendendo-226519"' >> ${BASH_ENV}
+        echo 'export CLUSTER_NAME="standard-cluster-1"' >> ${BASH_ENV}
+        echo 'export GCLOUD_KEY=$GCLOUD_KEY_PROD' >> ${BASH_ENV}
+        echo 'export ROK8S_CONFIG="deploy/config/production.config"' >> ${BASH_ENV}
   migration_steps: &migration_steps
     docker:
       - image: circleci/node:10.14.0
@@ -36,9 +66,8 @@ references:
       - image: quay.io/reactiveops/ci-images:v7-alpine
     steps:
       - checkout
-      - *set_environment_variables
-      - run: prepare-kubectl
-      - run: k8s-deploy-and-verify -f ${ROK8S_CONFIG}
+      - *initialize_env
+      - run: helm-deploy -f ${ROK8S_CONFIG}
   development_filters: &development_filters
     filters:
       branches:
@@ -71,7 +100,7 @@ jobs:
       - run: npm install
       - *save_cache
       - run: npm run lint
-      - run: npm run migrate
+      - run: npm run migrate TEST_DATABASE
       - run: npm test
   image_build:
     docker:
@@ -79,42 +108,39 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - *set_environment_variables
+      - *initialize_env
       - run: "[[ -n ${ROK8S_NO_BUILD} ]] || docker-pull -f ${ROK8S_CONFIG}"
       - run: "[[ -n ${ROK8S_NO_BUILD} ]] || docker-build -f ${ROK8S_CONFIG}"
       - run: "[[ -n ${ROK8S_NO_BUILD} ]] || docker-push -f ${ROK8S_CONFIG}"
     environment:
       ROK8S_CONFIG: deploy/config/staging.config
   migrate_development:
+    steps:
+      - *initialize_dev
     <<: *migration_steps
-    environment:
-      DATABASE_URI: DEVELOPMENT_DATABASE
   migrate_staging:
+    steps:
+      - *initialize_staging
     <<: *migration_steps
-    environment:
-      DATABASE_URI: STAGING_DATABASE
   migrate_production:
+    steps:
+      - *initialize_prod
+      - prepare-gcloud
     <<: *migration_steps
-    environment:
-      DATABASE_URI: PRODUCTION_DATABASE
   deploy_development:
+    steps:
+      - *initialize_dev
+      - prepare-gcloud
     <<: *deploy_steps
-    environment:
-      ENV: DEVELOPMENT
-      ROK8S_CONFIG: deploy/config/development.config
-      KUBECONFIG_DATA: KUBECONFIG_DATA_DEVELOPMENT
   deploy_staging:
+    steps:
+      - *initialize_staging
+      - prepare-gcloud
     <<: *deploy_steps
-    environment:
-      ENV: STAGING
-      ROK8S_CONFIG: deploy/config/staging.config
-      KUBECONFIG_DATA: KUBECONFIG_DATA_STAGING
   deploy_production:
+    steps:
+      - *initialize_prod
     <<: *deploy_steps
-    environment:
-      ENV: PRODUCTION
-      ROK8S_CONFIG: deploy/config/production.config
-      KUBECONFIG_DATA: KUBECONFIG_DATA_PRODUCTION
 
 workflows:
   version: 2
