@@ -113,7 +113,7 @@ jobs:
       - run: "[[ -n ${ROK8S_NO_BUILD} ]] || docker-build -f ${ROK8S_CONFIG}"
       - run: "[[ -n ${ROK8S_NO_BUILD} ]] || docker-push -f ${ROK8S_CONFIG}"
     environment:
-      ROK8S_CONFIG: deploy/config/staging.config
+      ROK8S_CONFIG: deploy/config/build.config
   migrate_development:
     steps:
       - *initialize_dev
