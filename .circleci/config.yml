@@ -30,8 +30,8 @@ references:
       name: Set Development Environment Variables
       command: |
         echo 'export DATABASE_URI=$DATABASE_URI_DEV' >> ${BASH_ENV}
-        echo 'export GCP_PROJECT="aprendendo-226519"' >> ${BASH_ENV}
-        echo 'export CLUSTER_NAME="standard-cluster-1"' >> ${BASH_ENV}
+        echo 'export GCP_PROJECT=$GCLOUD_PROJECT_DEV' >> ${BASH_ENV}
+        echo 'export CLUSTER_NAME=$GCLOUD_CLUSTER_DEV' >> ${BASH_ENV}
         echo 'export GCLOUD_KEY=$GCLOUD_KEY_DEV' >> ${BASH_ENV}
         echo 'export ROK8S_CONFIG="deploy/config/development.config"' >> ${BASH_ENV}
   initialize_staging: &initialize_staging
@@ -39,8 +39,8 @@ references:
       name: Set Staging Environment Variables
       command: |
         echo 'export DATABASE_URI=$DATABASE_URI_STAGING' >> ${BASH_ENV}
-        echo 'export GCP_PROJECT="aprendendo-226519"' >> ${BASH_ENV}
-        echo 'export CLUSTER_NAME="standard-cluster-1"' >> ${BASH_ENV}
+        echo 'export GCP_PROJECT=$GCLOUD_PROJECT_STAGING' >> ${BASH_ENV}
+        echo 'export CLUSTER_NAME=$GCLOUD_CLUSTER_STAGING' >> ${BASH_ENV}
         echo 'export GCLOUD_KEY=$GCLOUD_KEY_STAGING' >> ${BASH_ENV}
         echo 'export ROK8S_CONFIG="deploy/config/staging.config"' >> ${BASH_ENV}
   initialize_prod: &initialize_production
@@ -48,8 +48,8 @@ references:
       name: Set Production Environment Variables
       command: |
         echo 'export DATABASE_URI=$DATABASE_URI_PROD' >> ${BASH_ENV}
-        echo 'export GCP_PROJECT="aprendendo-226519"' >> ${BASH_ENV}
-        echo 'export CLUSTER_NAME="standard-cluster-1"' >> ${BASH_ENV}
+        echo 'export GCP_PROJECT=$GCLOUD_PROJECT_PROD' >> ${BASH_ENV}
+        echo 'export CLUSTER_NAME=$GCLOUD_CLUSTER_PROD' >> ${BASH_ENV}
         echo 'export GCLOUD_KEY=$GCLOUD_KEY_PROD' >> ${BASH_ENV}
         echo 'export ROK8S_CONFIG="deploy/config/production.config"' >> ${BASH_ENV}
   migration_steps: &migration_steps
