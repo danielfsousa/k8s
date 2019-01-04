@@ -43,7 +43,7 @@ references:
         echo 'export CLUSTER_NAME=$GCLOUD_CLUSTER_STAGING' >> ${BASH_ENV}
         echo 'export GCLOUD_KEY=$GCLOUD_KEY_STAGING' >> ${BASH_ENV}
         echo 'export ROK8S_CONFIG="deploy/config/staging.config"' >> ${BASH_ENV}
-  initialize_prod: &initialize_production
+  initialize_prod: &initialize_prod
     run:
       name: Set Production Environment Variables
       command: |
