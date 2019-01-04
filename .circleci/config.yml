@@ -109,6 +109,7 @@ jobs:
       - checkout
       - setup_remote_docker
       - *initialize_env
+      - *initialize_dev
       - run: "[[ -n ${ROK8S_NO_BUILD} ]] || docker-pull -f ${ROK8S_CONFIG}"
       - run: "[[ -n ${ROK8S_NO_BUILD} ]] || docker-build -f ${ROK8S_CONFIG}"
       - run: "[[ -n ${ROK8S_NO_BUILD} ]] || docker-push -f ${ROK8S_CONFIG}"
