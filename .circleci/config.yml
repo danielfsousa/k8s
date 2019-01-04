@@ -109,13 +109,12 @@ jobs:
       - checkout
       - setup_remote_docker
       - *initialize_env
-      - run: echo 'export GCLOUD_KEY=$GCLOUD_KEY_DEV' >> ${BASH_ENV}
+      - *initialize_dev
+      - run: export ROK8S_CONFIG="deploy/config/build.config"
       - run: prepare-gcloud
       - run: "[[ -n ${ROK8S_NO_BUILD} ]] || docker-pull -f ${ROK8S_CONFIG}"
       - run: "[[ -n ${ROK8S_NO_BUILD} ]] || docker-build -f ${ROK8S_CONFIG}"
       - run: "[[ -n ${ROK8S_NO_BUILD} ]] || docker-push -f ${ROK8S_CONFIG}"
-    environment:
-      ROK8S_CONFIG: deploy/config/build.config
   migrate_development:
     steps:
       - *initialize_dev
