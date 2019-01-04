@@ -110,7 +110,7 @@ jobs:
       - setup_remote_docker
       - *initialize_env
       - *initialize_dev
-      - run: export ROK8S_CONFIG="deploy/config/build.config"
+      - run: echo 'export ROK8S_CONFIG="deploy/config/build.config"' >> ${BASH_ENV}
       - run: prepare-gcloud
       - run: "[[ -n ${ROK8S_NO_BUILD} ]] || docker-pull -f ${ROK8S_CONFIG}"
       - run: "[[ -n ${ROK8S_NO_BUILD} ]] || docker-build -f ${ROK8S_CONFIG}"
