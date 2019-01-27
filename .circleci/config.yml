@@ -55,7 +55,7 @@ references:
   migration_steps: &migration_steps
     docker:
       - image: circleci/node:10.14.0
-    steps:
+    steps+:
       - checkout
       - *restore_cache
       - run: npm install
@@ -64,7 +64,7 @@ references:
   deploy_steps: &deploy_steps
     docker:
       - image: quay.io/reactiveops/ci-images:v7-alpine
-    steps:
+    steps+:
       - checkout
       - *initialize_env
       - run: prepare-gcloud
@@ -117,6 +117,8 @@ jobs:
       - run: "[[ -n ${ROK8S_NO_BUILD} ]] || docker-build -f ${ROK8S_CONFIG}"
       - run: "[[ -n ${ROK8S_NO_BUILD} ]] || docker-push -f ${ROK8S_CONFIG}"
   migrate_development:
+    docker:
+      - image: circleci/node:10.14.0
     steps:
       - *initialize_dev
     <<: *migration_steps
@@ -167,12 +169,15 @@ workflows:
       - deploy_development:
           <<: *development_filters
           requires:
+            - image_build
             - migrate_development
       - deploy_staging:
           <<: *staging_filters
           requires:
+            - image_build
             - migrate_staging
       - deploy_production:
           <<: *production_filters
           requires:
+            - image_build
             - migrate_production
