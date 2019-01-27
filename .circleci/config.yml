@@ -53,8 +53,6 @@ references:
         echo 'export GCLOUD_KEY=$GCLOUD_KEY_PROD' >> ${BASH_ENV}
         echo 'export ROK8S_CONFIG="deploy/config/production.config"' >> ${BASH_ENV}
   migration_steps: &migration_steps
-    docker:
-      - image: circleci/node:10.14.0
     steps+:
       - checkout
       - *restore_cache
@@ -123,10 +121,14 @@ jobs:
       - *initialize_dev
     <<: *migration_steps
   migrate_staging:
+    docker:
+      - image: circleci/node:10.14.0  
     steps:
       - *initialize_staging
     <<: *migration_steps
   migrate_production:
+    docker:
+      - image: circleci/node:10.14.0
     steps:
       - *initialize_prod
     <<: *migration_steps
