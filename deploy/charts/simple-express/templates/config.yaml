@@ -18,17 +18,17 @@ data:
   {{- end }}
 
   {{- if .Values.redis.enabled }}
-  REDIS_HOST: {{ template "redis.fullname" . }}
+  REDIS_HOST: "{{ template "redis.fullname" . }}-master"
   {{- else }}
   REDIS_HOST: {{ .Values.externalRedis.host | quote }}
   {{- end }}
 
   {{- if .Values.redis.enabled }}
-  REDIS_PORT: 6379
+  REDIS_PORT: "6379"
   {{- else }}
   REDIS_PORT: {{ .Values.externalRedis.port | quote }}
   {{- end }}
 
   {{- if .Values.env }}
   {{ toYaml .Values.env }}
-  {{- end}}
+  {{- end }}

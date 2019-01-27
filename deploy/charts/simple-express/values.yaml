@@ -1,6 +1,7 @@
 basedomain: simpleexpress.tk
 
 image:
+  pullSecret: gcr-secret
   repository: gcr.io/aprendendo-226519/simple-express
   tag: latest
 
