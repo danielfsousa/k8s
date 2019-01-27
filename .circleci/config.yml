@@ -72,8 +72,8 @@ references:
   development_filters: &development_filters
     filters:
       branches:
-        only:
-          - develop
+        ignore:
+          - master
       tags:
         ignore: /.*/
   staging_filters: &staging_filters
