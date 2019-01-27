@@ -24,9 +24,9 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           envFrom:
             - secretRef:
-                name: simple-express-secret
+                name: {{ template "fullname" . }}
             - configMapRef:
-                name: simple-express-config
+                name: {{ template "fullname" . }}
           ports:
             - containerPort: {{ .Values.service.internalPort }}
           resources:

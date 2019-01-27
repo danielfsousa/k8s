@@ -1,7 +1,7 @@
 basedomain: simpleexpress.tk
 
 image:
-  repository: danielfsousa/simple-express
+  repository: gcr.io/aprendendo-226519/simple-express
   tag: latest
 
 resources:
@@ -42,11 +42,13 @@ service:
   type: NodePort
   nodePort: 30000
   internalPort: 3000
+  externalPort: 80
 
 ingress:
   enabled: false
 
 redis:
+  enabled: true
   usePassword: false
   cluster:
     enabled: false
@@ -55,7 +57,11 @@ redis:
     persistence:
       enabled: false
 
-variables:
+externalRedis:
+  host: localhost
+  port: 6379
+
+env:
   NODE_ENV: development
 
 secrets:
