@@ -40,7 +40,7 @@ readinessProbe:
 service:
   name: http
   type: NodePort
-  externalPort: 3000
+  nodePort: 30000
   internalPort: 3000
 
 ingress:
